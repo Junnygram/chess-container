@@ -5,7 +5,7 @@ In this section, we'll explore how to clone a GitHub repository, build a Docker 
 
 ### Cloning the Repository
 
-First, we updte the instnce then clone the chess application repository from GitHub:
+First, we update the instance, then clone the chess application repository from GitHub:
 
 ```bash
 sudo apt update -y
@@ -28,7 +28,8 @@ Next, we create a `Dockerfile`, which contains instructions on how to build a Do
 touch Dockerfile
 nano Dockerfile
 ```
-this is the instruction below 
+Paste the content into the nano editor. Then, press `Ctrl + X` to exit, `Y` to confirm saving the changes, and `Enter` to finalize.
+
 ```bash
 # Use a Node.js base image
 FROM node:18-alpine
@@ -51,18 +52,19 @@ EXPOSE 3000
 # Command to run the application
 CMD ["npm", "start"]
 ```
+
 ![Screenshot 2024-08-28 at 16 24 41](https://github.com/user-attachments/assets/eb0a2829-2423-4d7d-b734-4e5fd26abadf)
 
- ctrl x y and enter to close nano editor 
 
 In the `Dockerfile`, you'll typically define the base image, copy the necessary files, install dependencies, and specify the command to run the application.
 now when we try to build 
-now we build we dont have docker instaled 
+
+
 ```
 docker build -t chess .
 ```
 
-thisdidnt build because we dont have docker installed now we build and it might fails because we dont have docker instaled . So before building the image, ensure that Docker is installed on your machine. If it's not, you can install it using the following script:
+The build failed because Docker is not installed on your machine. Before attempting to build the image, ensure that Docker is properly installed. If Docker isn't installed, you can set it up using the following script:
 
 ```bash
 curl -O https://raw.githubusercontent.com/Junnygram/installation_scripts/master/docker.sh
@@ -97,7 +99,7 @@ we will get the below
 ![Screenshot 2024-08-28 at 16 32 11](https://github.com/user-attachments/assets/4556d8fa-024b-47aa-aa42-a7ff1d4d63bf)
 
 
-to stop, we can run below with the container ID, it can be start stop restart 
+To stop the container, run the command below using the container ID. You can also start, stop, or restart containers using the corresponding commands.
 ```
 docker stop 32a6204355de
 ```
@@ -105,11 +107,33 @@ docker stop 32a6204355de
 
 now we we need to open security group to see our app on the browser, follow the image below 
 
+1. **Open the AWS Management Console:**
+   - Navigate to the [EC2 Dashboard](https://console.aws.amazon.com/ec2/).
+
+2. **Select Security Groups:**
+   - In the left-hand menu, under “Network & Security,” click on “Security Groups.”
+
+3. **Choose Your Security Group:**
+   - Find and select the security group associated with your EC2 instance.
+
+4. **Edit Inbound Rules:**
+   - Click on the “Inbound rules” tab and then click “Edit inbound rules.”
+
+5. **Add a Rule:**
+   - Click “Add rule.”
+   - Set the “Type” to `HTTP` (for port `80`) or `Custom TCP Rule` if you’re using a different port (e.g., `8080`).
+   - For “Port Range,” specify the port you're using (e.g., `8080`).
+   - For “Source,” you can set it to `0.0.0.0/0` to allow traffic from all IP addresses or restrict it to specific IP addresses as needed.
+   - Click “Save rules.”
+
 ![Screenshot 2024-08-28 at 16 32 56](https://github.com/user-attachments/assets/3c5bf851-f894-4df1-a2a7-c1b9c0f62445)
 
-![Screenshot 2024-08-28 at 16 41 00](https://github.com/user-attachments/assets/e4c5ec44-f5b1-4260-b6d4-e14401addb6f)
+now we will get our chess running on our browers via 
 
-![Screenshot 2024-08-28 at 16 43 44](https://github.com/user-attachments/assets/0535741c-91b4-432d-927c-510b98191c57)
+``` 
+<public-ip>:8080
+```
+![Screenshot 2024-08-28 at 16 01 17](https://github.com/user-attachments/assets/a3cd01e0-2360-4e4a-a472-f21e2e8b6ad4)
 
 
 
@@ -121,7 +145,7 @@ To share your Docker image, you need to push it to Docker Hub. First, log in to 
 ```bash
 docker login
 ```
-login, provide your username and password, .. the create a repository on the gui 
+Log in by providing your username and password, then create a repository through the Docker Hub GUI.
 Next, tag the image so Docker knows where to push it:
 
 ```bash
@@ -141,6 +165,12 @@ docker push junny27/chess:latest
 Make sure the security group attached to the instance allows inbound traffic on port 3000 from your IP or any IP (`0.0.0.0/0`) for public access.
 
 By following these steps, you'll have a live chess application running on your EC2 instance, accessible through the public IP address of your instance.
+
+### Best Practices and Final Notes
+
+- **Security:** Always use strong passwords for Docker Hub and AWS. Avoid opening unnecessary ports to reduce security risks.
+- **Cleanup:** Regularly remove unused Docker images and containers to free up space on your machine.
+- **Automation:** Consider setting up a CI/CD pipeline to automate the build and deployment process, especially for production environments.
 
 ---
 
