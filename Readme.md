@@ -16,6 +16,29 @@
 4. **Rolling Updates and Rollbacks**: Kubernetes allows for seamless updates to applications, ensuring minimal downtime and easy rollback if issues arise.
 5. **Infrastructure Abstraction**: Kubernetes abstracts the underlying infrastructure, allowing you to manage your applications without worrying about the specifics of the hardware.
 
+
+
+Kubernetes objects are persistent entities in the Kubernetes system that represent the desired state of your cluster. These objects can be created, managed, and deleted via Kubernetes manifests or command-line tools. Here’s a rundown of some Kubernetes objects we will be using:
+
+1. **Pod**: The smallest and simplest unit in Kubernetes. A Pod represents a single instance of a running process in your cluster. Pods can contain one or more containers, which share the same network namespace.
+
+2. **Service**: Provides a stable IP address and DNS name for a set of Pods, allowing for reliable communication between different parts of an application. Services also enable load balancing and service discovery.
+
+3. **Deployment**: Manages a set of Pods and ensures that the desired number of Pods are running at any given time. It handles rolling updates and rollbacks, making it easier to manage application versions.
+
+4. **Secret**: Stores sensitive data, such as passwords or API keys, in a secure way. Secrets are encoded in base64 and can be mounted into Pods or accessed via environment variables.
+
+5. **Namespace**: Provides a mechanism for isolating groups of resources within a single cluster. Namespaces help manage resources in larger clusters and enable resource quota management.
+
+6. **Ingress**: Manages external access to services, typically HTTP. It provides HTTP routing rules to manage traffic to your services.
+
+Each of these objects serves a specific purpose in managing and deploying applications in a Kubernetes cluster, allowing for efficient, scalable, and manageable deployments.
+
+
+
+
+
+
 ### How to Use Docker and Kubernetes
 
 **Using Docker**:
