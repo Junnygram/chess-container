@@ -1,4 +1,12 @@
-To create a `chess.yaml` manifest that deploys a Chess application (assuming you have a Docker image for the Chess application), you can follow these steps:
+Firstly we need to install kubernates on our instance you can read more about the installation here https://eksctl.io/installation/
+connect to the IAM user if youre connecting outside the aws console and ensure youve attached the  necessary policy to the user. 
+```
+curl -O https://github.com/Junnygram/chess-container/blob/main/kubeinstall.sh
+chmod +x kubeinstall.sh
+./kubeinstall.sh
+
+```
+To create a `chess.yaml` manifest that deploys a Chess application,  you can follow these steps:
 
 ### 1. Create the `chess.yaml` Manifest
 
@@ -113,3 +121,23 @@ And by checking the service:
 kubectl get svc
 ```
 
+Install using Fargate
+```
+eksctl create cluster --name chess-cluster --region us-east-1 --fargate
+```
+now the cluster is created 
+update 
+
+```
+aws eks update-kubeconfig --name chess-cluster --region us-east-1 --fargate
+```
+
+
+now lets create a fargate profile 
+```
+eksctl create fargateprofile \
+    --cluster chess-cluster \
+    --region us-east-1 \
+    --name alb-sample-app \
+    --namespace chess-deployment
+```
