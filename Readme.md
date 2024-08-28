@@ -119,6 +119,7 @@ The build failed because Docker is not installed on your machine. Before attempt
 curl -O https://raw.githubusercontent.com/Junnygram/installation_scripts/master/docker.sh
 ./docker.sh
 docker --version
+chmod +x script.sh
 ```
 
 After verifying the Docker installation, you can build the Docker image:
