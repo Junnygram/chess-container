@@ -116,6 +116,10 @@ aws iam create-policy \
 - `aws iam create-policy` creates a new IAM policy in your AWS account using the downloaded JSON file.
 - This policy allows the AWS Load Balancer Controller to manage load balancers on your behalf.
 
+
+```
+export AWS_REGION=us-east-1
+```
 ### 5. Create an IAM Role for AWS Load Balancer Controller
 
 ```bash
