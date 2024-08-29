@@ -1,143 +1,161 @@
-Firstly we need to install kubernates on our instance you can read more about the installation here https://eksctl.io/installation/
-connect to the IAM user if youre connecting outside the aws console and ensure youve attached the  necessary policy to the user. 
-```
+Here’s an updated version of your instructions, with explanations of what happens in the background when you run each command, making it easier for a novice to understand:
+
+---
+
+### 1. Install Kubernetes on Your Instance
+
+Firstly, you need to install Kubernetes on your instance. You can read more about the installation process [here](https://eksctl.io/installation/).
+
+If you're connecting to AWS outside the console (e.g., via CLI), make sure to connect to your IAM user and ensure you've attached the necessary policies to that user. This ensures that your user has the right permissions to create and manage Kubernetes resources on AWS.
+
+```bash
 curl -O https://github.com/Junnygram/chess-container/blob/main/kubeinstall.sh
 chmod +x kubeinstall.sh
 ./kubeinstall.sh
-
-```
-To create a `chess.yaml` manifest that deploys a Chess application,  you can follow these steps:
-
-### 1. Create the `chess.yaml` Manifest
-
-Below is an example of what the `chess.yaml` might look like. This YAML will deploy a Chess application using Kubernetes, similar to how you would deploy any application like NGINX.
-
-### Example `chess.yaml`:
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: chess-deployment
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: chess
-  template:
-    metadata:
-      labels:
-        app: chess
-    spec:
-      containers:
-      - name: chess
-        image: your-docker-image-for-chess:latest
-        ports:
-        - containerPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: chess-service
-spec:
-  selector:
-    app: chess
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
-  type: LoadBalancer
 ```
 
-### 2. Apply the `chess.yaml` File
+**Explanation**: 
+- The `curl -O` command downloads a script (`kubeinstall.sh`) from the provided URL.
+- `chmod +x kubeinstall.sh` makes the script executable.
+- `./kubeinstall.sh` runs the script to install Kubernetes and configure your environment.
 
-After creating the `chess.yaml` file, apply it to your Kubernetes cluster using the following command:
+### 2. Create a Chess Application Kubernetes Manifest
+
+To deploy a Chess application on Kubernetes, you'll first need to create a cluster and deploy the application.
+
+#### Create a Chess Cluster using Fargate
 
 ```bash
-kubectl apply -f chess.yaml
-```
-
-### 3. Update Your Security Group (as per your screenshot)
-
-Given that your security group currently allows traffic on port 3000, ensure that:
-
-- Your Chess application is running on port 3000 inside the container.
-- Update the service in your `chess.yaml` to expose port 3000 if that is the port your application listens on.
-
-### Example if Chess Application Runs on Port 3000:
-
-Update the `containerPort` and `targetPort` to 3000:
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: chess-deployment
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: chess
-  template:
-    metadata:
-      labels:
-        app: chess
-    spec:
-      containers:
-      - name: chess
-        image: your-docker-image-for-chess:latest
-        ports:
-        - containerPort: 3000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: chess-service
-spec:
-  selector:
-    app: chess
-  ports:
-  - protocol: TCP
-    port: 3000
-    targetPort: 3000
-  type: LoadBalancer
-```
-
-### 4. Confirm Security Group Settings
-
-If your EC2 instance or Kubernetes Load Balancer is supposed to allow access to port 3000, make sure that the security group is correctly configured, as shown in your screenshot, to allow incoming traffic on port 3000.
-
-### 5. Verify the Deployment
-
-You can verify that the Chess application is running by checking the pods:
-
-```bash
-kubectl get pods
-```
-
-And by checking the service:
-
-```bash
-kubectl get svc
-```
-
-Install using Fargate
-```
 eksctl create cluster --name chess-cluster --region us-east-1 --fargate
 ```
-now the cluster is created 
-update 
 
-```
+**Explanation**: 
+- `eksctl create cluster` is a command that creates a new EKS (Elastic Kubernetes Service) cluster. 
+- `--name chess-cluster` sets the name of your cluster to `chess-cluster`.
+- `--region us-east-1` specifies the AWS region where the cluster will be created.
+- `--fargate` means that your cluster will use AWS Fargate, which allows you to run Kubernetes pods without having to manage the underlying EC2 instances.
+
+#### Update kubeconfig to Connect to the Cluster
+
+```bash
 aws eks update-kubeconfig --name chess-cluster --region us-east-1 --fargate
 ```
 
+**Explanation**: 
+- This command updates your kubeconfig file to include the details of the newly created cluster. 
+- The kubeconfig file is what Kubernetes uses to know how to communicate with your cluster. By updating it, you’re setting up your environment to interact with the `chess-cluster`.
 
-now lets create a fargate profile 
-```
+#### Create a Fargate Profile
+
+```bash
 eksctl create fargateprofile \
     --cluster chess-cluster \
     --region us-east-1 \
     --name alb-sample-app \
     --namespace chess-deployment
 ```
+
+**Explanation**:
+- A Fargate profile defines which Kubernetes pods should run on Fargate.
+- Here, `--cluster chess-cluster` specifies the cluster the profile is for.
+- `--namespace chess-deployment` restricts the profile to only apply to pods within the `chess-deployment` namespace. This means only those pods will run on Fargate.
+- Running on Fargate simplifies infrastructure management, enhances security by isolating each pod, and eliminates the need to manage the underlying servers (EC2 instances).
+
+### 3. Deploy the Chess Application
+
+Now that your environment is set up, you can deploy your Chess application.
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/Junnygram/chess-container/main/chess.yaml
+kubectl get pods -n chess-deployment
+```
+
+**Explanation**: 
+- `kubectl apply -f` downloads and applies the Kubernetes configuration from the `chess.yaml` file.
+- This file defines the deployment of your Chess application, including how many instances (replicas) of the application should run.
+- `kubectl get pods -n chess-deployment` lists all the pods running in the `chess-deployment` namespace. Since you have specified `replicas: 2` in the YAML file, you should see two pods.
+
+### 4. Create an IAM Policy for AWS Load Balancer Controller
+
+To use an AWS Load Balancer with your Kubernetes service, you need to create the necessary IAM policy.
+
+```bash
+curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.5.4/docs/install/iam_policy.json
+```
+
+**Explanation**:
+- This command downloads the IAM policy JSON file required for the AWS Load Balancer Controller.
+
+```bash
+aws iam create-policy \
+--policy-name AWSLoadBalancerControllerIAMPolicy \
+--policy-document file://iam_policy.json
+```
+
+**Explanation**:
+- `aws iam create-policy` creates a new IAM policy in your AWS account using the downloaded JSON file.
+- This policy allows the AWS Load Balancer Controller to manage load balancers on your behalf.
+
+### 5. Create an IAM Role for AWS Load Balancer Controller
+
+```bash
+eksctl create iamserviceaccount \
+  --cluster=chess-cluster \
+  --namespace=kube-system \
+  --name=aws-load-balancer-controller \
+  --role-name AmazonEKSLoadBalancerControllerRole \
+  --attach-policy-arn=arn:aws:iam::<your-aws-account-id>:policy/AWSLoadBalancerControllerIAMPolicy \
+  --approve
+```
+
+**Explanation**:
+- This command creates an IAM role and associates it with the Kubernetes service account `aws-load-balancer-controller` in the `kube-system` namespace of your cluster.
+- The role has the necessary permissions (as defined by the IAM policy) to manage AWS resources like load balancers.
+
+### 6. Install Helm (if not already installed)
+
+```bash
+brew install helm
+```
+
+**Explanation**:
+- This command installs Helm, a package manager for Kubernetes that simplifies the deployment and management of applications within a Kubernetes cluster.
+
+### 7. Add and Update the Helm Repository
+
+```bash
+helm repo add eks https://aws.github.io/eks-charts
+```
+
+**Explanation**:
+- This command adds the AWS EKS Helm chart repository, which contains Helm charts specifically for EKS.
+
+```bash
+helm repo update eks
+```
+
+**Explanation**:
+- This command updates the local list of available charts from the EKS Helm repository, ensuring you have the latest versions.
+
+### 8. Install the AWS Load Balancer Controller
+
+Finally, install the AWS Load Balancer Controller using Helm.
+
+```bash
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=chess-cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller --set region=us-east-1 --set vpcId=vpc-0556fd5afb69db27a
+```
+
+**Explanation**:
+- `helm install` installs the AWS Load Balancer Controller using the Helm chart from the `eks` repository.
+- `--set clusterName=chess-cluster`, `--set region=us-east-1`, and `--set vpcId=vpc-0556fd5afb69db27a` specify the cluster name, region, and VPC ID where the load balancer should be set up.
+
+```bash
+kubectl get deployment -n kube-system aws-load-balancer-controller -w
+```
+
+**Explanation**:
+- This command checks the status of the AWS Load Balancer Controller deployment in the `kube-system` namespace. The `-w` flag watches for updates, so you can see when the controller is fully deployed.
+
+### 9. Access Your Chess Application
+
+Once the AWS Load Balancer Controller is set up, your Chess application will be accessible via the load balancer’s address, which you can obtain from the AWS Management Console under the ELB (Elastic Load Balancer) section.
