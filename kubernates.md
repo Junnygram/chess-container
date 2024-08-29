@@ -58,7 +58,7 @@ These components together enable a serverless Kubernetes environment, reducing t
 #### Update kubeconfig to Connect to the Cluster
 
 ```bash
-aws eks update-kubeconfig --name chess-cluster --region us-east-1 --fargate
+aws eks update-kubeconfig --name chess-cluster --region us-east-1
 ```
 
 **Explanation**: 
