@@ -17,6 +17,9 @@ chmod +x kubeinstall.sh
 - `chmod +x kubeinstall.sh` makes the script executable.
 - `./kubeinstall.sh` runs the script to install Kubernetes and configure your environment.
 
+
+#### step one not needed 
+
 ### 2. Create a Chess Application Kubernetes Manifest
 
 To deploy a Chess application on Kubernetes, you'll first need to create a cluster and deploy the application.
