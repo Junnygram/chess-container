@@ -33,6 +33,25 @@ eksctl create cluster --name chess-cluster --region us-east-1 --fargate
 - `--region us-east-1` specifies the AWS region where the cluster will be created.
 - `--fargate` means that your cluster will use AWS Fargate, which allows you to run Kubernetes pods without having to manage the underlying EC2 instances.
 
+#### When you run the command `eksctl create cluster --name chess-cluster --region us-east-1 --fargate`, the following key components are created:
+
+1. **EKS Cluster**: A managed Kubernetes control plane that handles scheduling, networking, and maintaining the desired state of your cluster.
+
+2. **Fargate Profile**: Defines which pods run on AWS Fargate, allowing you to deploy containers without managing EC2 instances.
+
+3. **VPC and Subnets**: Networking infrastructure that provides internal and external communication for the cluster.
+
+4. **IAM Roles and Policies**: Permissions for the EKS cluster and Fargate to interact with AWS services.
+
+5. **Security Groups**: Control inbound and outbound traffic to the cluster and its components.
+
+6. **Kubernetes Resources**: Default namespaces and system pods that form the basic infrastructure for running workloads.
+
+These components together enable a serverless Kubernetes environment, reducing the need for manual infrastructure management.
+
+
+
+
 #### Update kubeconfig to Connect to the Cluster
 
 ```bash
