@@ -1,6 +1,4 @@
-Here’s an updated version of your instructions, with explanations of what happens in the background when you run each command, making it easier for a novice to understand:
 
----
 
 ### 1. Install Kubernetes on Your Instance
 
