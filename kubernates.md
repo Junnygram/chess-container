@@ -88,6 +88,8 @@ Now that your environment is set up, you can deploy your Chess application.
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/Junnygram/chess-container/main/chess.yaml
 kubectl get pods -n chess-deployment
+kubectl get svc -n chess-deployment
+kubectl get ingress -n chess-deployment
 ```
 
 **Explanation**: 
@@ -95,6 +97,10 @@ kubectl get pods -n chess-deployment
 - This file defines the deployment of your Chess application, including how many instances (replicas) of the application should run.
 - `kubectl get pods -n chess-deployment` lists all the pods running in the `chess-deployment` namespace. Since you have specified `replicas: 2` in the YAML file, you should see two pods.
 
+
+```
+eksctl utils associate-iam-oidc-provider --cluster chess-cluster --approve
+```
 ### 4. Create an IAM Policy for AWS Load Balancer Controller
 
 To use an AWS Load Balancer with your Kubernetes service, you need to create the necessary IAM policy.
@@ -132,6 +138,15 @@ eksctl create iamserviceaccount \
   --approve
 ```
 
+eksctl create iamserviceaccount \
+  --cluster=chess-cluster \
+  --namespace=kube-system \
+  --name=aws-load-balancer-controller \
+  --role-name AmazonEKSLoadBalancerControllerRole \
+  --attach-policy-arn=arn:aws:iam::975049938324:policy/AWSLoadBalancerControllerIAMPolicy \
+  --approve
+
+
 **Explanation**:
 - This command creates an IAM role and associates it with the Kubernetes service account `aws-load-balancer-controller` in the `kube-system` namespace of your cluster.
 - The role has the necessary permissions (as defined by the IAM policy) to manage AWS resources like load balancers.
@@ -166,7 +181,8 @@ helm repo update eks
 Finally, install the AWS Load Balancer Controller using Helm.
 
 ```bash
-helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=chess-cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller --set region=us-east-1 --set vpcId=vpc-0556fd5afb69db27a
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=chess-cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller --set region=us-east-1 --set vpcId=vpc-043bf1cfc51634c20 
+
 ```
 
 **Explanation**:
@@ -175,6 +191,7 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n ku
 
 ```bash
 kubectl get deployment -n kube-system aws-load-balancer-controller -w
+kubectl get ingress -n chess-deployment
 ```
 
 **Explanation**:
