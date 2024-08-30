@@ -200,3 +200,10 @@ kubectl get ingress -n chess-deployment
 ### 9. Access Your Chess Application
 
 Once the AWS Load Balancer Controller is set up, your Chess application will be accessible via the load balancer’s address, which you can obtain from the AWS Management Console under the ELB (Elastic Load Balancer) section.
+
+
+
+dont forgrt to delete cluster 
+```
+eksctl delete cluster --name chess-cluster --region us-east-1
+```
