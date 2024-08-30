@@ -143,7 +143,7 @@ eksctl create iamserviceaccount \
   --namespace=kube-system \
   --name=aws-load-balancer-controller \
   --role-name AmazonEKSLoadBalancerControllerRole \
-  --attach-policy-arn=arn:aws:iam::975049938324:policy/AWSLoadBalancerControllerIAMPolicy \
+  --attach-policy-arn=arn:aws:iam::<accoundId>:policy/AWSLoadBalancerControllerIAMPolicy \
   --approve
 
 
@@ -181,7 +181,8 @@ helm repo update eks
 Finally, install the AWS Load Balancer Controller using Helm.
 
 ```bash
-helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=chess-cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller --set region=us-east-1 --set vpcId=vpc-043bf1cfc51634c20 
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=chess-cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller --set region=us-east-1 --set vpcId=vpc-0179c9fd7b0947f8d 
+
 
 ```
 
