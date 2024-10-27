@@ -25,7 +25,7 @@ jobs:
 
       # Build the Docker image with both latest and commit SHA tags
       - name: Build image
-        run: docker build . -t ${{ env.IMAGE_TAG }}:${{ env.COMMIT_SHA }}
+        run: docker build . -t ${{ env.IMAGE_TAG }}:latest -t ${{ env.IMAGE_TAG }}:${{ env.COMMIT_SHA }}
 
       # Log in to Docker Hub
       - name: Docker login
@@ -34,4 +34,5 @@ jobs:
       # Push both tags: latest and commit SHA
       - name: Push image
         run: |
+          docker push ${{ env.IMAGE_TAG }}:latest
           docker push ${{ env.IMAGE_TAG }}:${{ env.COMMIT_SHA }}
