@@ -1,5 +1,14 @@
+# Ignore Node.js dependencies
 node_modules
+
+# Ignore npm debug logs
 npm-debug.log
-Dockerfile
+
+# Ignore Docker Compose file (optional, based on your use case)
 docker-compose.yml
-.dockerignore
+
+# Ignore version control files
+.git
+.gitignore
+
+# You can add any other files or directories that are not needed for the build
