@@ -19,8 +19,9 @@ jobs:
         id: vars
         run: |
           IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/chess-app
-          COMMIT_SHA=$(echo $GITHUB_SHA | cut -c1-7)  # Shorten the commit SHA
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${IMAGE_TAG}"  # Print for debugging
+          COMMIT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
           echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
 
       # Build the Docker image with both latest and commit SHA tags
