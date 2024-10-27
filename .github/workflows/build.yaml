@@ -18,7 +18,7 @@ jobs:
       - name: Set image tags
         id: vars
         run: |
-          IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/actions
+          IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/chess-app
           COMMIT_SHA=$(echo $GITHUB_SHA | cut -c1-7)  # Shorten the commit SHA
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
           echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
