@@ -1,3 +1,7 @@
+Sure! Here’s your updated section with the link to the Docker documentation and the GitHub repository included:
+
+---
+
 ### Project Prerequisites
 
 #### 1. **Basic Knowledge of JavaScript and React**
@@ -59,4 +63,8 @@ git --version
 | Docker   | Latest                | Containerization      |
 | Git      | Latest                | Version control       |
 
-With these prerequisites, you’ll be ready to clone, run, containerize, and deploy the application. Let me know if you need additional details on any of the prerequisites!
+With these prerequisites, you’ll be ready to clone, run, containerize, and deploy the application. For further instructions on containerization and deployment using Docker, please refer to the [Docker Documentation](./docker.md) .. Now lets continue our project [here](https://github.com/Junnygram/chess-container/tree/updatedVersion).
+
+---
+
+Let me know if you need any more changes!
