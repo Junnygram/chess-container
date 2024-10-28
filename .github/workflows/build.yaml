@@ -20,7 +20,7 @@ jobs:
         run: |
           IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/chess-app
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${IMAGE_TAG}"  # Print for debugging
+
           COMMIT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
           echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
 
@@ -32,8 +32,25 @@ jobs:
       - name: Docker login
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
-      # Push both tags: latest and commit SHA
+      # Check if the latest tag exists
+      - name: Check if latest exists
+        id: check_latest
+        run: |
+          if docker pull ${{ env.IMAGE_TAG }}:latest; then
+            echo "Latest tag exists."
+            echo "LATEST_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "Latest tag does not exist."
+            echo "LATEST_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      # Conditional push based on the existence of the latest tag
       - name: Push image
         run: |
-          docker push ${{ env.IMAGE_TAG }}:latest
-          docker push ${{ env.IMAGE_TAG }}:${{ env.COMMIT_SHA }}
+          if [ "${{ env.LATEST_EXISTS }}" = "false" ]; then
+            echo "Pushing only latest tag."
+            docker push ${{ env.IMAGE_TAG }}:latest
+          else
+            echo "Pushing commit SHA tags."
+            docker push ${{ env.IMAGE_TAG }}:${{ env.COMMIT_SHA }}
+          fi
