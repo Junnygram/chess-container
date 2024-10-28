@@ -178,3 +178,8 @@ docker stop <container_id>
 
 Replace `<container_id>` with the actual ID you found. If you have any more questions or need further assistance, let me know!
 ![Screenshot 2024-10-27 at 13 51 19](https://github.com/user-attachments/assets/6e74c33b-9c0d-436c-b3da-66085092eb90)
+
+
+
+ Now lets continue with CI/CD implemenation  [here](https://github.com/Junnygram/chess-container/blob/main/cicd.md).
+
