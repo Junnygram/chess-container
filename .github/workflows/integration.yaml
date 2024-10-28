@@ -24,5 +24,3 @@ jobs:
           cache: 'npm'
       - name: 'Installing Depenedencies'
         run: npm i
-      # - name: 'Build Command'
-      #   run: npm run build
