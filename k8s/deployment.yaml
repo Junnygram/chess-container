@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chess-app
+  labels:
+    type: backend
+    app: nodeapp
+spec:
+  replicas: 1 # Number of replicas (pods) to run
+  selector:
+    matchLabels:
+      type: backend
+      app: nodeapp
+  template:
+    metadata:
+      name: reactapppod
+      labels:
+        type: backend
+        app: nodeapp
+    spec:
+      containers:
+        - name: chess-container
+          image: us.gcr.io/kubernetes-440515/chess-app:v1
+          ports:
+            - containerPort: 80 # Port the container listens on
+
