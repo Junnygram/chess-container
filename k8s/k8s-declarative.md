@@ -159,5 +159,10 @@ URL: http://34.42.72.202
 
 ![Access Application](https://github.com/user-attachments/assets/5b4fb954-479c-46cd-bd59-3b3ca4e80ceb)
 
+### 9. Deleting our cluster 
+```bash
+   gcloud container clusters delete my-first-cluster-1 --zone us-central1-c --project kubernetes-440515
+```
+
 ---
 
