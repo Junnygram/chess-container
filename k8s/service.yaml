@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-app-load-balancer-service
+spec:
+  type: LoadBalancer # Type of service
+  ports:
+    - port: 80 # Port exposed to the external world
+      targetPort: 80 # Port on the container
+  selector:
+    type: backend
+    app: nodeapp
