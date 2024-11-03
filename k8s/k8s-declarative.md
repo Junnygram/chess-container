@@ -20,8 +20,8 @@ Go to the **Google Cloud Console** and enable the **Kubernetes Engine API**.
 
 1. **Create Project**:
    - Go to **Google Cloud Console** and create a project (e.g., `kubernetes-440515`).
-     
 2. **Create Cluster**:
+
    - In the Kubernetes Engine section, create a new cluster.
    - Choose **Standard Cluster** and follow the setup guide (e.g., "My First Cluster").
 
@@ -32,7 +32,7 @@ Go to the **Google Cloud Console** and enable the **Kubernetes Engine API**.
 ![Screenshot 2024-11-02 at 16 16 13](https://github.com/user-attachments/assets/2ef8058a-eaaf-43a3-9840-926c175134bb)
 
 3. cli authentication
-    ```bash
+   ```bash
    gcloud auth login
    ```
 
@@ -46,14 +46,13 @@ Go to the **Google Cloud Console** and enable the **Kubernetes Engine API**.
    ```bash
    docker push us.gcr.io/kubernetes-440515/chess-app:v1
    ```
-![Screenshot 2024-11-02 at 17 13 58](https://github.com/user-attachments/assets/d3907ec8-32d9-4d1e-92ae-fbb22249eb87)
+   ![Screenshot 2024-11-02 at 17 13 58](https://github.com/user-attachments/assets/d3907ec8-32d9-4d1e-92ae-fbb22249eb87)
 
 ![Screenshot 2024-11-02 at 17 27 11](https://github.com/user-attachments/assets/61a69644-54b5-4a4b-8668-0ab3c45bd95b)
 
 Example output:
 
 ![Service Status](https://github.com/user-attachments/assets/2b8b6019-761d-459b-a7c5-06b1173c2151)
-
 
 ### 4. Install the GKE Auth Plugin and Authenticate
 
@@ -65,7 +64,7 @@ Example output:
    ```bash
    gcloud container clusters get-credentials my-first-cluster-1 --zone us-central1-c --project kubernetes-440515
    ```
-![Get Cluster Credentials](https://github.com/user-attachments/assets/9bcc38e7-c2de-45e7-9156-1fba40ca2ff5)
+   ![Get Cluster Credentials](https://github.com/user-attachments/assets/9bcc38e7-c2de-45e7-9156-1fba40ca2ff5)
 
 ### 5. Verify Cluster Information
 
@@ -135,6 +134,7 @@ spec:
     type: backend
     app: nodeapp
 ```
+
 In Kubernetes, the `Service` selector must match the labels in the `Deployment` template, and the `targetPort` in the `Service` must align with the `containerPort` in the `Deployment`. While names, replica counts, and container configurations can vary, these critical matches ensure that traffic is correctly routed to the intended pods. This setup allows for flexibility in managing resources without compromising functionality.
 
 1. **Apply the Service Configuration**:
@@ -146,23 +146,36 @@ In Kubernetes, the `Service` selector must match the labels in the `Deployment` 
    kubectl get svc
    ```
 
-
 ### 8. Access the Application
 
 Once the LoadBalancer service is created, note the external IP. You can access the app using this IP on port 80.
 
 Example:
+
 ```
 URL: http://34.42.72.202
 ```
+
 ![Screenshot 2024-11-02 at 18 34 59](https://github.com/user-attachments/assets/5789760b-a981-4720-b34a-845b221fb3c0)
 
 ![Access Application](https://github.com/user-attachments/assets/5b4fb954-479c-46cd-bd59-3b3ca4e80ceb)
 
-### 9. Deleting our cluster 
+### 9. Deleting our cluster
+
 ```bash
    gcloud container clusters delete my-first-cluster-1 --zone us-central1-c --project kubernetes-440515
 ```
 
 ---
 
+Here’s an updated version of your section on Kubernetes deployment on GCP, incorporating Terraform for automation:
+
+---
+
+## Kubernetes Deployment on GCP
+
+With the prerequisites in place, you can proceed with deploying the application on Google Cloud Platform using Kubernetes. For detailed instructions on how to configure and manage your Kubernetes deployment with Terraform for automation, please refer to the [k8s-automated.md](https://github.com/Junnygram/chess-container/tree/main/k8s/k8s-automated.md) file.
+
+---
+
+Let me know if you need any further adjustments!

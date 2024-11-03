@@ -60,3 +60,7 @@ git --version
 | Git      | Latest                | Version control       |
 
 With these prerequisites, you’ll be ready to clone, run, containerize, and deploy the application. Let me know if you need additional details on any of the prerequisites!
+
+## Docker Creation
+
+Now that you have the prerequisites set up, you can proceed with creating the Docker container for the application. Detailed instructions on how to create and manage the Docker container can be found in the [Docker.md](https://github.com/Junnygram/chess-container/blob/main/Docker.md) file.
