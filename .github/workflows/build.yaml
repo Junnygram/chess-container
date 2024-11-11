@@ -1,56 +1,112 @@
-name: Build
-
+name: Deploy to Kubernetes
 on:
   push:
-    branches: ['main']
+    branches:
+      - main
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  TF_STATE_BUCKET_NAME: ${{ secrets.GCP_TF_STATE_BUCKET }}
+  IMAGE_TAG: ${{ github.sha }}
+
+permissions:
+  contents: 'read'
+  id-token: 'write'
+## commented build and push to dockerhub; our new buil and push is to Google Container Registry (GCR)
+# jobs:
+#   build-and-push:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v4
+
+#       - name: Enable debug
+#         run: set -x
+
+#       # Set image tags (Docker Hub username and commit SHA)
+#       - name: Set image tags
+#         id: vars
+#         run: |
+#           IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/chess-app
+#           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+#           COMMIT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+#           echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
+
+#       # Build the Docker image with both latest and commit SHA tags
+#       - name: Build image
+#         run: docker build . -t ${{ env.IMAGE_TAG }}:latest -t ${{ env.IMAGE_TAG }}:${{ env.COMMIT_SHA }}
+
+#       # Log in to Docker Hub
+#       - name: Docker login
+#         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+#       # Check if the latest tag exists
+#       - name: Check if latest exists
+#         id: check_latest
+#         run: |
+#           if docker pull ${{ env.IMAGE_TAG }}:latest; then
+#             echo "Latest tag exists."
+#             echo "LATEST_EXISTS=true" >> $GITHUB_ENV
+#           else
+#             echo "Latest tag does not exist."
+#             echo "LATEST_EXISTS=false" >> $GITHUB_ENV
+#           fi
+
+#       # Conditional push based on the existence of the latest tag
+#       - name: Push image
+#         run: |
+#           if [ "${{ env.LATEST_EXISTS }}" = "false" ]; then
+#             echo "Pushing only latest tag."
+#             docker push ${{ env.IMAGE_TAG }}:latest
+#           else
+#             echo "Pushing commit SHA tags."
+#             docker push ${{ env.IMAGE_TAG }}:${{ env.COMMIT_SHA }}
+#           fi
 
 jobs:
-  build-and-push:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out the code
+        uses: actions/checkout@v3
 
-      - name: Enable debug
-        run: set -x
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/k8s-pool/providers/k8s-provider'
+          service_account: 'tf-gke-test@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
 
-      # Set image tags (Docker Hub username and commit SHA)
-      - name: Set image tags
-        id: vars
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker for Google Cloud
+        run: gcloud auth configure-docker
+
+      - name: Build and Push Docker Image
         run: |
-          IMAGE_TAG=${{ secrets.DOCKERHUB_USERNAME }}/chess-app
-          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          docker build -t us.gcr.io/${{ secrets.GCP_PROJECT_ID }}/nodeappimage:${IMAGE_TAG} .
+          docker push us.gcr.io/${{ secrets.GCP_PROJECT_ID }}/nodeappimage:${IMAGE_TAG}
+        working-directory: ./nodeapp
 
-          COMMIT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
-          echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
 
-      # Build the Docker image with both latest and commit SHA tags
-      - name: Build image
-        run: docker build . -t ${{ env.IMAGE_TAG }}:latest -t ${{ env.IMAGE_TAG }}:${{ env.COMMIT_SHA }}
+      - name: Terraform Init
+        run: terraform init -backend-config="bucket=${{ env.TF_STATE_BUCKET_NAME }}"
+        working-directory: ./terraform
 
-      # Log in to Docker Hub
-      - name: Docker login
-        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-
-      # Check if the latest tag exists
-      - name: Check if latest exists
-        id: check_latest
+      - name: Terraform Plan
         run: |
-          if docker pull ${{ env.IMAGE_TAG }}:latest; then
-            echo "Latest tag exists."
-            echo "LATEST_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "Latest tag does not exist."
-            echo "LATEST_EXISTS=false" >> $GITHUB_ENV
-          fi
+          terraform plan \
+            -var="region=us-central1" \
+            -var="project_id=${{ env.GCP_PROJECT_ID }}" \
+            -var="container_image=us.gcr.io/${{ env.GCP_PROJECT_ID }}/nodeappimage:${IMAGE_TAG}" \
+            -out=PLAN
+        working-directory: ./terraform
 
-      # Conditional push based on the existence of the latest tag
-      - name: Push image
-        run: |
-          if [ "${{ env.LATEST_EXISTS }}" = "false" ]; then
-            echo "Pushing only latest tag."
-            docker push ${{ env.IMAGE_TAG }}:latest
-          else
-            echo "Pushing commit SHA tags."
-            docker push ${{ env.IMAGE_TAG }}:${{ env.COMMIT_SHA }}
-          fi
+      - name: Terraform Apply
+        run: terraform apply PLAN
+        working-directory: ./terraform

@@ -14,6 +14,15 @@ This documentation outlines the integration and build workflows for a Node.js pr
 
 ### Key Changes and Improvements
 
+1. **Clarity and Structure**: Each job has a specific purpose and is named according to the Node.js version being built.
+2. **Efficient Tagging**: The tagging logic in the build workflow determines how to tag based on the existence of the "latest" tag.
+3. **Comments**: Added comments for clarity, making the workflow easier to follow.
+4. **Secrets for Security**: Utilizes GitHub secrets for Docker Hub credentials to improve security.
+
+## Kubernetes Deployment on GCP
+
+With the prerequisites in place, you can proceed with deploying the application on Google Cloud Platform using Kubernetes. Detailed instructions on how to configure and manage your Kubernetes deployment can be found in the [k8s-declarative.md](https://github.com/Junnygram/chess-container/tree/main/k8s/k8s-declarative.md) file.
+=======
 - **Clarity and Structure**: Each job is named according to the Node.js version it builds, enhancing readability.
 - **Efficient Tagging**: The build workflow intelligently tags images based on the existence of the "latest" tag.
 - **Comments for Clarity**: Added comments within the workflows to provide context and explanations.
@@ -55,3 +64,4 @@ For further integration with Kubernetes, refer to the relevant resources in the 
 ---
 
 This version streamlines your information and organizes it into clear sections, making it easier for readers to follow and understand the process.
+
