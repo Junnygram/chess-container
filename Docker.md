@@ -179,6 +179,10 @@ docker stop <container_id>
 Replace `<container_id>` with the actual ID you found. If you have any more questions or need further assistance, let me know!
 ![Screenshot 2024-10-27 at 13 51 19](https://github.com/user-attachments/assets/6e74c33b-9c0d-436c-b3da-66085092eb90)
 
-## GitHub Actions
 
 With the prerequisites in place, you can set up GitHub Actions to automate your workflows. Detailed instructions on how to configure and use GitHub Actions for this project can be found in the [cicd.md](https://github.com/Junnygram/chess-container/blob/main/cicd.md) file.
+
+
+
+ Now lets continue with CI/CD implemenation  [here](https://github.com/Junnygram/chess-container/blob/main/cicd.md).
+
