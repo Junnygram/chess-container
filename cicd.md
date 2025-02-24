@@ -58,7 +58,7 @@ If the Build Workflow does not complete:
 
 ### Kubernetes Integration
 
-For further integration with Kubernetes, refer to the relevant resources in the repository [here](https://github.com/Junnygram/chess-container/blob/main/k8s).
+For further integration with Kubernetes, refer to the relevant resources in the repository [here](https://github.com/Junnygram/chess-container/blob/main/k8s/k8s-declarative.md).
 
 
 ---
